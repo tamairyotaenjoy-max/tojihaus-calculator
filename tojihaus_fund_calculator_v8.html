@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOJIHAUS LPS 直近組成シナリオ v1</title>
+<style>
+:root{
+  --bg:#111318;--s1:#191c24;--s2:#1f2330;--s3:#262b3a;
+  --bd:#2d3348;--bd2:#3a4060;
+  --g:#e4e2da;--g2:#c8c6d2;--g3:#9896a8;
+  --a:#d4a843;--a2:#5ba8d4;--a3:#4dcfa0;
+  --red:#d46a5b;--warn:#d4943a;
+  --fn:'Noto Sans JP','Helvetica Neue',sans-serif;
+  --fm:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--g);font-family:var(--fn);font-size:13px;line-height:1.6;min-height:100vh;overflow:hidden}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--bd);background:var(--s1)}
+header h1{font-size:14px;font-weight:600;letter-spacing:.06em;color:var(--a)}
+.ver{font-size:10px;color:var(--a2);background:rgba(91,168,212,.12);padding:2px 8px;border-radius:10px}
+.conf{font-size:10px;color:var(--g3);margin-left:auto}
+.wrap{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 41px);overflow:hidden}
+
+/* LEFT */
+.left{border-right:1px solid var(--bd);overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:14px}
+.left::-webkit-scrollbar{width:3px}
+.left::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.sec-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g3);padding-bottom:4px;border-bottom:1px solid var(--bd);margin-bottom:8px}
+.phase-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.pf{display:flex;flex-direction:column;gap:3px}
+.pl{font-size:10px;color:var(--g3)}
+.pi{background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--g);font-family:var(--fm);font-size:13px;font-weight:600;padding:5px 6px;text-align:center;width:100%;outline:none}
+.pi:focus{border-color:var(--a)}
+.field{display:flex;flex-direction:column;gap:4px}
+.fh{display:flex;justify-content:space-between;align-items:center}
+.fl{font-size:11px;color:var(--g2)}
+.fv{font-size:12px;font-weight:700;color:var(--g);font-family:var(--fm);min-width:80px;text-align:right}
+.fv span{font-size:9px;color:var(--g3);font-weight:400;margin-left:2px}
+.fv.a{color:var(--a)}.fv.b{color:var(--a2)}.fv.c{color:var(--a3)}.fv.w{color:var(--warn)}
+input[type=range]{-webkit-appearance:none;width:100%;height:2px;background:var(--bd);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--a);cursor:pointer}
+input[type=range].b::-webkit-slider-thumb{background:var(--a2)}
+input[type=range].c::-webkit-slider-thumb{background:var(--a3)}
+input[type=range].w::-webkit-slider-thumb{background:var(--warn)}
+.re{display:flex;justify-content:space-between;font-size:9px;color:var(--g3);margin-top:1px}
+.hr{height:1px;background:var(--bd)}
+
+/* RIGHT */
+.right{overflow:hidden;display:flex;flex-direction:column}
+.tabs{display:flex;border-bottom:1px solid var(--bd);background:var(--s1);flex-shrink:0}
+.tab{padding:10px 18px;font-size:12px;font-weight:500;color:var(--g3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--g2)}
+.tab.active{color:var(--a);border-bottom-color:var(--a)}
+.tc{overflow-y:auto;flex:1;padding:14px}
+.tc::-webkit-scrollbar{width:3px}
+.tc::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.tp{display:none}.tp.active{display:block}
+.slabel{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g3);margin-bottom:8px;margin-top:12px}
+.slabel:first-child{margin-top:0}
+
+/* CARDS */
+.cr{display:grid;gap:10px;margin-bottom:10px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+.g5{grid-template-columns:1fr 1fr 1fr 1fr 1fr}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:9px;padding:11px 13px}
+.card.ab{border-color:var(--a)}.card.bb{border-color:var(--a2)}.card.cb{border-color:var(--a3)}
+.card.rb{border-color:var(--red)}.card.wb{border-color:var(--warn)}
+.clb{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);margin-bottom:5px}
+.cmv{font-size:18px;font-weight:700;font-family:var(--fm);color:var(--g);line-height:1.2}
+.cmv.a{color:var(--a)}.cmv.b{color:var(--a2)}.cmv.c{color:var(--a3)}
+.cmv.r{color:var(--red)}.cmv.w{color:var(--warn)}
+.csv{font-size:10px;color:var(--g3);margin-top:2px}
+
+/* SIGNAL CARD */
+.sig-card{border-radius:9px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:16px}
+.sig-card.green{background:rgba(77,207,160,.08);border:1px solid rgba(77,207,160,.4)}
+.sig-card.yellow{background:rgba(212,148,58,.08);border:1px solid rgba(212,148,58,.4)}
+.sig-card.red{background:rgba(212,106,91,.08);border:1px solid rgba(212,106,91,.4)}
+.sig-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.sig-dot.green{background:var(--a3)}.sig-dot.yellow{background:var(--warn)}.sig-dot.red{background:var(--red)}
+.sig-main{font-size:14px;font-weight:700;font-family:var(--fm)}
+.sig-main.green{color:var(--a3)}.sig-main.yellow{color:var(--warn)}.sig-main.red{color:var(--red)}
+.sig-sub{font-size:11px;color:var(--g2);margin-top:2px}
+
+/* TABLE */
+.tbl{background:var(--s1);border:1px solid var(--bd);border-radius:9px;overflow:hidden;margin-bottom:10px}
+.tbl-h{padding:8px 13px;border-bottom:1px solid var(--bd);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--g3);display:grid;gap:6px}
+.tbl-h div:not(:first-child){text-align:right}
+.trow{padding:7px 13px;border-bottom:1px solid var(--bd);font-size:12px;display:grid;gap:6px;transition:background .1s;cursor:default}
+.trow:last-child{border-bottom:none}
+.trow:hover{background:var(--s2)}
+.trow div:not(:first-child){text-align:right;font-family:var(--fm);font-size:11px}
+.trow.tot{background:var(--s2);font-weight:600}
+.trow.tot div:first-child{color:var(--g)}
+.trow .nm{color:var(--g2)}
+.trow .pos{color:var(--a)}.trow .pos2{color:var(--a2)}.trow .pos3{color:var(--a3)}
+.trow .neg{color:var(--red)}.trow .neu{color:var(--g)}
+.trow .warn{color:var(--warn)}
+.einput{background:transparent;border:none;border-bottom:1px solid var(--bd2);color:var(--g);font-family:var(--fm);font-size:11px;text-align:right;width:80px;outline:none;padding:1px 2px}
+.einput:focus{border-bottom-color:var(--a);color:var(--a)}
+
+/* PROGRESS BAR */
+.pbar-wrap{margin-bottom:10px}
+.pbar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--g2);margin-bottom:4px}
+.pbar-track{height:8px;background:var(--s2);border-radius:4px;overflow:hidden;border:1px solid var(--bd)}
+.pbar-fill{height:100%;border-radius:4px;transition:width .3s ease}
+
+/* COST BREAKDOWN (2-col) */
+.cost-section{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+
+/* ── TOOLTIP ── */
+.tip-wrap{position:relative;display:inline-flex;align-items:center;gap:5px;cursor:help}
+.tip-icon{width:14px;height:14px;border-radius:50%;background:var(--bd2);color:var(--g3);font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;user-select:none}
+.tip-wrap:hover .tip-icon{background:var(--a2);color:var(--bg)}
+.tip-box{display:none;position:absolute;left:22px;top:50%;transform:translateY(-50%);z-index:200;background:var(--s3);border:1px solid var(--bd2);border-radius:9px;padding:11px 14px;width:270px;font-size:11px;line-height:1.75;color:var(--g2);box-shadow:0 6px 24px rgba(0,0,0,.6);pointer-events:none}
+.tip-wrap:hover .tip-box{display:block}
+.tip-box b{color:var(--a);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:5px}
+.tip-box .ti{color:var(--g3);font-size:10px;padding-left:6px;display:block}
+.tip-box .tn{color:var(--a2);font-size:10px;margin-top:7px;padding-top:7px;border-top:1px solid var(--bd);display:block}
+.tip-box .ts{color:var(--a3);font-size:10px;display:block}
+.scenario-bar{display:flex;align-items:center;gap:6px;margin-left:auto;margin-right:8px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>TOJIHAUS ファンド試算ツール</h1>
+  <span class="ver">直近組成 v1</span>
+  <div class="scenario-bar">
+    <input type="text" id="scenario_name" placeholder="シナリオ名" style="background:var(--s2);border:1px solid var(--bd);color:var(--g);border-radius:5px;padding:4px 8px;font-size:11px;width:140px;">
+    <button onclick="saveScenario()" style="background:var(--a);color:#111;border:none;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600;">💾 保存</button>
+    <button onclick="document.getElementById('load_file').click()" style="background:var(--s2);border:1px solid var(--bd);color:var(--g2);border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;">📂 読込</button>
+    <input type="file" id="load_file" accept=".json" onchange="loadScenario(event)" style="display:none;">
+  </div>
+  <span class="conf">CONFIDENTIAL / INTERNAL USE ONLY</span>
+</header>
+<div class="wrap">
+
+<!-- ===== LEFT ===== -->
+<div class="left">
+
+  <div>
+    <div class="sec-title">棟数（Phase別）</div>
+    <div class="phase-row">
+      <div class="pf"><div class="pl">Phase 1</div><input class="pi" type="number" id="p1" value="10" min="1" max="30" oninput="calc()"></div>
+      <div class="pf"><div class="pl">Phase 2</div><input class="pi" type="number" id="p2" value="0" min="0" max="30" oninput="calc()"></div>
+      <div class="pf"><div class="pl">Phase 3</div><input class="pi" type="number" id="p3" value="0" min="0" max="50" oninput="calc()"></div>
+    </div>
+  </div>
+  <div class="hr"></div>
+
+  <div>
+    <div class="sec-title">宿泊収益（EW採算用）</div>
+    <div class="field">
+      <div class="fh"><span class="fl">ADR（1棟・1泊）</span><span class="fv a" id="v_adr">42,000<span>円</span></span></div>
+      <input type="range" id="adr" min="20000" max="80000" step="1000" value="42000" oninput="calc()">
+      <div class="re"><span>2万</span><span>8万</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">短期稼働率</span><span class="fv a" id="v_occ">48<span>%</span></span></div>
+      <input type="range" id="occ" min="10" max="80" step="1" value="48" oninput="calc()">
+      <div class="re"><span>10%</span><span>80%</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">中期滞在（週）年間回数</span><span class="fv a" id="v_mid">6<span>回</span></span></div>
+      <input type="range" id="mid" min="0" max="16" step="1" value="6" oninput="calc()">
+      <div class="re"><span>0回</span><span>16回</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">中期滞在 週単価</span><span class="fv a" id="v_mrate">120,000<span>円</span></span></div>
+      <input type="range" id="mrate" min="70000" max="200000" step="5000" value="120000" oninput="calc()">
+      <div class="re"><span>7万</span><span>20万</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="tip-wrap">
+          <span class="fl">EW経費率（売上比）</span>
+          <span class="tip-icon">?</span>
+          <div class="tip-box">
+            <b>含まれる経費項目</b>
+            <span class="ti">・OTA送客手数料（売上比 約12%）</span>
+            <span class="ti">・清掃費・委託費（約16%）</span>
+            <span class="ti">・リネンサプライ費（約4%）</span>
+            <span class="ti">・水道光熱費（約6%）</span>
+            <span class="ti">・業務委託費・消耗品（約16%）</span>
+            <span class="ti">・通信・保険・廃棄物等（約2%）</span>
+            <span class="ti">・運営予備費（約2%）</span>
+            <span class="tn">出典：事業計画検討_0305改編案 行26<br>柴石・短期稼働率48%想定の保守値</span>
+            <span class="ts">※稼働率が上がると経費率は下がる傾向</span>
+          </div>
+        </span><span class="fv w" id="v_cr">65<span>%</span></span></div>
+      <input type="range" class="w" id="cr" min="40" max="85" step="1" value="65" oninput="calc()">
+      <div class="re"><span>40%</span><span>85%</span></div>
+    </div>
+  </div>
+  <div class="hr"></div>
+
+  <div>
+    <div class="sec-title">ベビーFTK — 設定</div>
+    <div class="field">
+      <div class="fh"><span class="fl">リノベ工事面積</span><span class="fv a" id="v_tsubo">25<span>坪</span></span></div>
+      <input type="range" id="tsubo" min="10" max="60" step="1" value="25" oninput="calc()">
+      <div class="re"><span>10坪</span><span>60坪</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">リノベ坪単価</span><span class="fv a" id="v_tsubo_price">35<span>万/坪</span></span></div>
+      <input type="range" id="tsubo_price" min="10" max="80" step="5" value="35" oninput="calc()">
+      <div class="re"><span>10万</span><span>80万</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="tip-wrap">
+          <span class="fl">月額賃料（ファンド収入）</span>
+          <span class="tip-icon">?</span>
+          <div class="tip-box">
+            <b>設定の考え方</b>
+            <span class="ti">EWがファンドに毎月固定で支払う賃料</span>
+            <span class="ti">宿泊売上とは直接連動しない</span>
+            <span class="tn">設定の目安<br>EW粗利（売上×35%）から賃料を払って<br>EW営業利益が残る水準に設定<br>→ カバレッジ比率 1.2倍以上が目安</span>
+            <span class="ts">BBK実績：175,276円/月（工事費1,100万）</span>
+          </div>
+        </span><span class="fv c" id="v_rent">160,000<span>円</span></span></div>
+      <input type="range" class="c" id="rent" min="50000" max="400000" step="5000" value="185000" oninput="calc()">
+      <div class="re"><span>5万</span><span>40万</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">マザー出資比率</span><span class="fv b" id="v_mr">85<span>%</span></span></div>
+      <input type="range" class="b" id="mr" min="50" max="100" step="5" value="85" oninput="calc()">
+      <div class="re"><span>50%</span><span>100%</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="tip-wrap">
+          <span class="fl">FTK目標年利（投資家向け）</span>
+          <span class="tip-icon">?</span>
+          <div class="tip-box">
+            <b>ベビーFTK 投資家への約束利回り</b>
+            <span class="ti">運用期間全体での累計目標（単利）</span>
+            <span class="ti">インカム（賃料）＋キャピタル（売却益）</span>
+            <span class="ti">の合計で達成を目指す</span>
+            <span class="tn">賃料が不足する年は翌年に繰り越し<br>最終年のキャピタルで辻褄を合わせる設計</span>
+            <span class="ts">実現利回りはCFテーブルで確認</span>
+          </div>
+        </span><span class="fv c" id="v_baby_r">8<span>%</span></span></div>
+      <input type="range" class="c" id="baby_r" min="2" max="14" step="0.5" value="8" oninput="calc()">
+      <div class="re"><span>2%</span><span>14%</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">ファンド運用期間</span><span class="fv c" id="v_term">3<span>年</span></span></div>
+      <input type="range" class="c" id="term" min="2" max="7" step="1" value="4" oninput="calc()">
+      <div class="re"><span>2年</span><span>7年</span></div>
+    </div>
+    <div class="field">
+      <div class="fh">
+        <span class="tip-wrap"><span class="fl">1ファンドあたり棟数</span><span class="tip-icon">?</span><div class="tip-box"><b>複数棟まとめる効果</b><span class="ti">FTK組成upfrontは1ファンド1回のみ</span><span class="ti">棟数をまとめるほど1棟あたりの</span><span class="ti">upfront負担が減り資金効率が上がる</span><span class="tn">5棟まとめると1棟あたりのupfront<br>コストが約1/5に圧縮される</span></div></span>
+        <span class="fv c" id="v_bunk">5<span>棟/F</span></span>
+      </div>
+      <input type="range" class="c" id="bunk" min="1" max="10" step="1" value="5" oninput="calc()">
+      <div class="re"><span>1棟</span><span>10棟</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">事業（償却）期間</span><span class="fv" id="v_life">15<span>年</span></span></div>
+      <input type="range" id="life" min="5" max="22" step="1" value="15" oninput="calc()">
+      <div class="re"><span>5年</span><span>22年</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="tip-wrap">
+          <span class="fl">EW管理委託料（売上比・出口後）</span>
+          <span class="tip-icon">?</span>
+          <div class="tip-box">
+            <b>含める業務（出口後のみ）</b>
+            <span class="ti">・オーナーレポート・収益管理</span>
+            <span class="ti">・緊急対応・クレーム窓口</span>
+            <span class="ti">・旅館業関連行政手続き</span>
+            <span class="ti">・チャンネルマネージャー等ツール費</span>
+            <span class="tn">⚠ 二重計上に注意<br>OTA手数料・清掃費・リネン代は<br>経費率65%に既に含まれています</span>
+            <span class="ts">妥当ライン：3〜5%（デフォルト5%）</span>
+          </div>
+        </span><span class="fv w" id="v_mgmt_fee">15<span>%</span></span></div>
+      <input type="range" class="w" id="mgmt_fee" min="0" max="40" step="1" value="5" oninput="calc()">
+      <div class="re"><span>5%</span><span>40%</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="tip-wrap">
+          <span class="fl">出口買い手の期待利回り</span>
+          <span class="tip-icon">?</span>
+          <div class="tip-box">
+            <b>出口売却価格の逆算に使用</b>
+            <span class="ti">出口投資家が物件購入時に求める利回り</span>
+            <span class="tn">計算式<br>売却価格 =（NOI − 管理委託料）÷ 期待利回り<br><br>低いほど高値で売れる（有利）<br>高いほど安くなる（不利）</span>
+            <span class="ts">別府宿泊施設の相場：8〜10%程度</span>
+          </div>
+        </span><span class="fv c" id="v_ey">9<span>%</span></span></div>
+      <input type="range" class="c" id="ey" min="5" max="15" step="0.5" value="8" oninput="calc()">
+      <div class="re"><span>5%</span><span>15%</span></div>
+    </div>
+  </div>
+  <div class="hr"></div>
+
+  <div>
+    <div class="sec-title">マザーLPS — コスト</div>
+    <div class="field">
+      <div class="fh"><span class="fl">マザーLPS存続期間</span><span class="fv b" id="v_mterm">6<span>年</span></span></div>
+      <input type="range" class="b" id="mterm" min="3" max="10" step="1" value="4" oninput="calc()">
+      <div class="re"><span>3年</span><span>10年</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">LPS融資LTV</span><span class="fv b" id="v_ltv">50<span>%</span></span></div>
+      <input type="range" class="b" id="ltv" min="0" max="70" step="5" value="0" oninput="calc()">
+      <div class="re"><span>0%（融資なし）</span><span>70%</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="fl">融資金利</span><span class="fv b" id="v_loan_rate">2.5<span>%</span></span></div>
+      <input type="range" class="b" id="loan_rate" min="0.5" max="5" step="0.5" value="2.5" oninput="calc()">
+      <div class="re"><span>0.5%</span><span>5.0%</span></div>
+    </div>
+    <div class="field" style="padding-bottom:4px">
+      <div class="fh"><span class="fl">返済方式</span></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--g2);cursor:pointer"><input type="radio" name="repay_type" id="repay_bullet" value="bullet" checked onchange="calc()"> バレット（利払いのみ・満期一括）</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--g2);cursor:pointer"><input type="radio" name="repay_type" id="repay_annuity" value="annuity" onchange="calc()"> 元利均等</label>
+      </div>
+      <div style="font-size:9px;color:var(--g3);margin-top:3px">バレット：期中は金利のみ、満期に元本一括返済</div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="tip-wrap">
+          <span class="fl">GP管理報酬（年・投資額比）</span>
+          <span class="tip-icon">?</span>
+          <div class="tip-box">
+            <b>マザーLPS GP（エンジョイワークス）への報酬</b>
+            <span class="ti">マザー総投資額に対する年率</span>
+            <span class="ti">運用期間中、毎年発生</span>
+            <span class="tn">業界標準：年1〜2%<br>LPS法上、GPは無限責任を負うため<br>相応の報酬設計が必要</span>
+          </div>
+        </span><span class="fv b" id="v_gp">2<span>%</span></span></div>
+      <input type="range" class="b" id="gp" min="0" max="5" step="0.5" value="2" oninput="calc()">
+      <div class="re"><span>0%</span><span>5%</span></div>
+    </div>
+    <div class="field">
+      <div class="fh"><span class="tip-wrap">
+          <span class="fl">会計監査費用（年額）</span>
+          <span class="tip-icon">?</span>
+          <div class="tip-box">
+            <b>LPS法上の義務的コスト</b>
+            <span class="ti">公認会計士・監査法人による外部監査</span>
+            <span class="ti">LPS法により毎事業年度必須</span>
+            <span class="tn">規模別の目安<br>〜3億円規模：年100〜150万円<br>3〜10億円規模：年150〜300万円</span>
+            <span class="ts">省略不可（法的義務）</span>
+          </div>
+        </span><span class="fv b" id="v_audit">150<span>万円</span></span></div>
+      <input type="range" class="b" id="audit" min="0" max="500" step="10" value="150" oninput="calc()">
+      <div class="re"><span>0万</span><span>500万</span></div>
+    </div>
+  </div>
+
+</div><!-- /left -->
+
+<!-- ===== RIGHT ===== -->
+<div class="right">
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('baby')">ベビーFTK（1棟）</div>
+    <div class="tab" onclick="showTab('mother')">マザーLPS（全棟）</div>
+    <div class="tab" onclick="showTab('summary')">サマリー</div>
+  </div>
+
+  <!-- ===== TAB: BABY ===== -->
+  <div class="tc tp active" id="tp-baby">
+
+    <!-- EW採算チェック -->
+    <div class="slabel">EW採算チェック（賃料支払能力）</div>
+    <div id="sig_area"></div>
+    <div class="tbl" id="ew_tbl"></div>
+
+    <!-- カバレッジ -->
+    <div class="slabel">カバレッジ比率（粗利 ÷ 賃料）</div>
+    <div class="pbar-wrap">
+      <div class="pbar-label"><span id="cov_label">—</span><span id="cov_val">—</span></div>
+      <div class="pbar-track"><div class="pbar-fill" id="cov_bar" style="width:0%"></div></div>
+    </div>
+
+    <!-- ベビーFTK収益 -->
+    <div class="slabel">ベビーFTK 収益構造（1棟）</div>
+    <div class="cr g4">
+      <div class="card"><div class="clb">月額賃料（収入）</div><div class="cmv c" id="r_rent">—</div><div class="csv">ファンドの収入源</div></div>
+      <div class="card"><div class="clb">年間賃料収入</div><div class="cmv c" id="r_rent_y">—</div><div class="csv" id="r_rent_y_s">—</div></div>
+      <div class="card"><div class="clb">出口買い取り価格</div><div class="cmv a" id="r_exit">—</div><div class="csv" id="r_exit_s">—</div></div>
+      <div class="card cb"><div class="clb">FTK キャピタルゲイン</div><div class="cmv c" id="r_cap">—</div><div class="csv" id="r_cap_s">—</div></div>
+    </div>
+
+    <!-- ベビー初期コスト -->
+    <div class="slabel">初期コスト（ベビーFTK 募集額の構成）</div>
+    <div class="tbl">
+      <div class="tbl-h" style="grid-template-columns:1fr 80px 90px 80px"><div>項目</div><div>1棟</div><div>ファンド全体</div><div>備考</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">① 不動産購入費</div><div><input class="einput" id="bc_fudosan" value="800" oninput="calc()"></div><div class="pos2" id="bc_fudosan_t">—</div><div style="font-size:10px;color:var(--g3)">土地＋建物</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">② 仲介手数料</div><div class="neu" id="bc_chukai">—</div><div class="neu" id="bc_chukai_t">—</div><div style="font-size:10px;color:var(--g3)">×N棟</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">③ リノベ工事費（税込）</div><div class="pos" id="bc1">—</div><div class="pos" id="bc1_t">—</div><div style="font-size:10px;color:var(--g3)" id="bc1_note">—</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">④ 建築設計料</div><div class="neu" id="bc_design">—</div><div class="neu" id="bc_design_t">—</div><div style="font-size:10px;color:var(--g3)">×N棟</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">⑤ 外構工事</div><div><input class="einput" id="bc_gaiku" value="200" oninput="calc()"></div><div class="pos2" id="bc_gaiku_t">—</div><div style="font-size:10px;color:var(--g3)">×N棟</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">⑥ 家具備品</div><div><input class="einput" id="bc_kagu" value="200" oninput="calc()"></div><div class="pos2" id="bc_kagu_t">—</div><div style="font-size:10px;color:var(--g3)">×N棟</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">⑦ 予備費</div><div><input class="einput" id="bc_yobi" value="50" oninput="calc()"></div><div class="pos2" id="bc_yobi_t">—</div><div style="font-size:10px;color:var(--g3)">×N棟</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">⑧ 企画PFフィー</div><div><input class="einput" id="bc2" value="150" oninput="calc()"></div><div class="pos2" id="bc2_t">—</div><div style="font-size:10px;color:var(--g3)">×N棟</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">⑨ FTK upfrontフィー</div><div><input class="einput" id="bc3" value="" placeholder="自動(5%)" oninput="calc()"></div><div class="pos2" id="bc3_t">—</div><div style="font-size:10px;color:var(--g3)">1F1回×F数</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">⑩ 運転資金</div><div><input class="einput" id="bc4" value="80" oninput="calc()"></div><div class="pos2" id="bc4_t">—</div><div style="font-size:10px;color:var(--g3)">×N棟</div></div>
+      <div class="trow" style="grid-template-columns:1fr 80px 90px 80px"><div class="nm">⑪ その他</div><div><input class="einput" id="bc5" value="0" oninput="calc()"></div><div class="pos2" id="bc5_t">—</div><div></div></div>
+      <div class="trow tot" style="grid-template-columns:1fr 80px 90px 80px"><div>ファンド募集総額（N棟）</div><div class="pos" id="bc_tot">—/棟</div><div class="pos" id="bc_fund_total">—</div><div style="font-size:10px;color:var(--g3)" id="bc_fund_note">—</div></div>
+    </div>
+
+    <!-- ベビー年次コスト -->
+    <div class="slabel">年次経費（1棟・年間）</div>
+    <div class="tbl">
+      <div class="tbl-h" style="grid-template-columns:1fr 90px 90px 100px"><div>項目</div><div>年額（万円）</div><div>期間合計</div><div>備考</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">不動産関連費（保険・修繕）</div><div><input class="einput" id="ba1" value="10" oninput="calc()"></div><div id="ba1t">—</div><div style="font-size:10px;color:var(--g3)">BBK実績ベース</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">ファンド管理費</div><div id="ba2d">—</div><div id="ba2t">—</div><div style="font-size:10px;color:var(--g3)">募集額×2%</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">経理・雑費</div><div><input class="einput" id="ba3" value="5" oninput="calc()"></div><div id="ba3t">—</div><div></div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">その他</div><div><input class="einput" id="ba4" value="0" oninput="calc()"></div><div id="ba4t">—</div><div></div></div>
+      <div class="trow tot" style="grid-template-columns:1fr 90px 90px 100px"><div>年次経費合計</div><div id="ba_tot">—</div><div id="ba_tot_t">—</div><div></div></div>
+    </div>
+
+    <!-- 資金調達コスト -->
+    <div class="slabel">資金調達コスト分析（事業期間全体）</div>
+    <div id="funding_tbl"></div>
+
+    <!-- CF表 -->
+    <div class="slabel">ベビーFTK キャッシュフロー（1棟・賃料ベース変動分配）</div>
+    <div id="baby_cf"></div>
+
+    <!-- ベビーFTK PL -->
+    <div class="slabel">ベビーFTK 損益計算書（1棟・年間）</div>
+    <div id="ftk_pl_tbl"></div>
+
+    <!-- 出口投資家 PL -->
+    <div class="slabel">出口投資家 損益計算書（購入後・年間）</div>
+    <div id="exit_pl_tbl"></div>
+
+    <!-- 按分 -->
+    <div class="slabel">マザー vs 個人投資家 按分（1棟）</div>
+    <div class="cr g4">
+      <div class="card ab"><div class="clb">マザー投資額</div><div class="cmv a" id="bm_inv">—</div><div class="csv" id="bm_inv_s">—</div></div>
+      <div class="card ab"><div class="clb">マザー 分配受取計</div><div class="cmv a" id="bm_inc">—</div><div class="csv" id="bm_inc_s">—</div></div>
+      <div class="card ab"><div class="clb">マザー キャピタル（FTK内）</div><div class="cmv a" id="bm_cap">—</div><div class="csv">参考・マザー収入に含まず</div></div>
+      <div class="card ab"><div class="clb">マザー インカム累計利回り</div><div class="cmv a" id="bm_r">—</div><div class="csv" id="bm_r_s">—</div></div>
+      <div class="card bb"><div class="clb">個人 投資額</div><div class="cmv b" id="bp_inv">—</div><div class="csv" id="bp_inv_s">—</div></div>
+      <div class="card bb"><div class="clb">個人 分配受取計</div><div class="cmv b" id="bp_inc">—</div><div class="csv" id="bp_inc_s">—</div></div>
+      <div class="card bb"><div class="clb">個人 キャピタル（FTK内）</div><div class="cmv b" id="bp_cap">—</div><div class="csv">参考</div></div>
+      <div class="card bb"><div class="clb">個人 インカム累計利回り</div><div class="cmv b" id="bp_r">—</div><div class="csv" id="bp_r_s">—</div></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: MOTHER ===== -->
+  <div class="tc tp" id="tp-mother">
+    <div class="slabel">初期コスト（組成時・1回限り）</div>
+    <div class="tbl">
+      <div class="tbl-h" style="grid-template-columns:1fr 100px 120px"><div>項目</div><div>金額（万円）</div><div>備考</div></div>
+      <div class="trow" style="grid-template-columns:1fr 100px 120px"><div class="nm">LPS設立登記・法務費用</div><div><input class="einput" id="mc1" value="80" oninput="calc()"></div><div style="font-size:10px;color:var(--g3)">弁護士・司法書士等</div></div>
+      <div class="trow" style="grid-template-columns:1fr 100px 120px"><div class="nm">組合契約書作成費（弁護士）</div><div><input class="einput" id="mc4" value="50" oninput="calc()"></div><div style="font-size:10px;color:var(--g3)">LP契約書・規程整備</div></div>
+      <div class="trow" style="grid-template-columns:1fr 100px 120px"><div class="nm">63条特例業務届出費用</div><div><input class="einput" id="mc2" value="20" oninput="calc()"></div><div style="font-size:10px;color:var(--g3)">書類作成等</div></div>
+      <div class="trow" style="grid-template-columns:1fr 100px 120px"><div class="nm">その他</div><div><input class="einput" id="mc3" value="0" oninput="calc()"></div><div></div></div>
+      <div class="trow tot" style="grid-template-columns:1fr 100px 120px"><div>組成初期コスト合計</div><div id="mc_tot">—</div><div></div></div>
+    </div>
+
+    <div class="slabel">年次コスト（運用期間中）</div>
+    <div class="tbl">
+      <div class="tbl-h" style="grid-template-columns:1fr 90px 90px 100px"><div>項目</div><div>年額（万円）</div><div>期間合計</div><div>備考</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">GP管理報酬</div><div id="ma1d">—</div><div id="ma1t">—</div><div style="font-size:10px;color:var(--g3)">投資額×スライダー%</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">会計監査費用</div><div id="ma2d">—</div><div id="ma2t">—</div><div style="font-size:10px;color:var(--g3)">スライダー設定</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">経理・事務費用</div><div><input class="einput" id="ma3" value="30" oninput="calc()"></div><div id="ma3t">—</div><div style="font-size:10px;color:var(--g3)">帳簿・報告書作成等</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">税務申告費用</div><div><input class="einput" id="ma5" value="50" oninput="calc()"></div><div id="ma5t">—</div><div style="font-size:10px;color:var(--g3)">組合確定申告・LP損益配分（LPS法義務）</div></div>
+      <div class="trow" style="grid-template-columns:1fr 90px 90px 100px"><div class="nm">その他</div><div><input class="einput" id="ma4" value="0" oninput="calc()"></div><div id="ma4t">—</div><div></div></div>
+      <div class="trow tot" style="grid-template-columns:1fr 90px 90px 100px"><div>年次コスト合計</div><div id="ma_tot">—</div><div id="ma_tot_t">—</div><div></div></div>
+    </div>
+
+    <div class="slabel">マザーLPS 収支サマリー（全<span id="m_units">—</span>棟）</div>
+    <div class="cr g3">
+      <div class="card ab"><div class="clb">マザー総投資額</div><div class="cmv a" id="m_inv">—</div><div class="csv" id="m_inv_s">—</div></div>
+      <div class="card ab"><div class="clb">ベビーから受取（分配金計）</div><div class="cmv a" id="m_recv">—</div><div class="csv" id="m_recv_s">年利×投資額×年数</div></div>
+      <div class="card"><div class="clb">コスト合計（初期＋運用）</div><div class="cmv" id="m_cost">—</div><div class="csv" id="m_cost_s">—</div></div>
+    </div>
+    <div class="cr g3">
+      <div class="card bb"><div class="clb">LP純収益</div><div class="cmv b" id="m_lp">—</div><div class="csv">受取−全コスト</div></div>
+      <div class="card bb"><div class="clb">LP年率利回り（単純）</div><div class="cmv b" id="m_lpr">—</div><div class="csv" id="m_lpr_s">—</div></div>
+      <div class="card"><div class="clb">ベビー目標利回り対比</div><div class="cmv" id="m_vs">—</div><div class="csv">LP利回り vs ベビー目標</div></div>
+    </div>
+
+    <div class="slabel">マザーLPS 年次キャッシュフロー（全棟合算）</div>
+    <div id="mother_cf"></div>
+  </div>
+
+  <!-- ===== TAB: SUMMARY ===== -->
+  <div class="tc tp" id="tp-summary">
+    <div class="slabel">3者利回り比較</div>
+    <div class="cr g3">
+      <div class="card cb"><div class="clb">ベビー個人投資家</div><div class="cmv c" id="s_baby">—</div><div class="csv" id="s_baby_s">累計÷投資額</div></div>
+      <div class="card bb"><div class="clb">マザーLP（GP費後）</div><div class="cmv b" id="s_lp">—</div><div class="csv" id="s_lp_s">存続—年</div></div>
+      <div class="card"><div class="clb">出口投資家（想定）</div><div class="cmv" id="s_exit">—</div><div class="csv">設定値</div></div>
+    </div>
+
+    <div class="slabel">ファンド全体規模</div>
+    <div class="cr g4">
+      <div class="card"><div class="clb">ベビーFTK 総募集額</div><div class="cmv a" id="s_bfund">—</div><div class="csv" id="s_bfund_s">—</div></div>
+      <div class="card"><div class="clb">FTKファンド本数（合計）</div><div class="cmv" id="s_fund_num">—</div><div class="csv" id="s_fund_num_s">—棟/F×3Phase</div></div>
+      <div class="card"><div class="clb">うちマザー出資分</div><div class="cmv a" id="s_minv">—</div><div class="csv" id="s_minv_s">—</div></div>
+      <div class="card"><div class="clb">うち個人投資家分</div><div class="cmv a" id="s_pinv">—</div><div class="csv" id="s_pinv_s">—</div></div>
+      <div class="card"><div class="clb">EW 調達工事費合計</div><div class="cmv" id="s_koji">—</div><div class="csv" id="s_koji_s">—</div></div>
+    </div>
+
+    <div class="slabel">EW採算チェック（全棟）</div>
+    <div id="sig_area2"></div>
+
+    <div class="slabel">Phase別 内訳</div>
+    <div id="phase_tbl"></div>
+
+    <div class="slabel">EWマネタイズ（全棟・全期間）</div>
+    <div id="ew_monetize_tbl"></div>
+  </div>
+
+</div><!-- /right -->
+</div><!-- /wrap -->
+
+<script>
+const $=id=>document.getElementById(id);
+const fmtM=n=>isNaN(n)||n===null?'—':Math.round(n/10000).toLocaleString()+'万円';
+const fmtMp=n=>isNaN(n)?'—':(n>=0?'+':'')+Math.round(n/10000).toLocaleString()+'万円';
+const pct=(n,d=1)=>isNaN(n)?'—':(n*100).toFixed(d)+'%';
+const num=id=>parseFloat($(id).value)||0;
+const m=v=>Math.round(v/10000).toLocaleString();
+
+function showTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',['baby','mother','summary'][i]===name);
+  });
+  document.querySelectorAll('.tp').forEach(t=>t.classList.remove('active'));
+  $('tp-'+name).classList.add('active');
+}
+
+function sigCard(cls,dotCls,main,sub){
+  return `<div class="sig-card ${cls}"><div class="sig-dot ${dotCls}"></div><div><div class="sig-main ${dotCls}">${main}</div><div class="sig-sub">${sub}</div></div></div>`;
+}
+
+function calc(){
+  const p1=parseInt($('p1').value)||0,p2=parseInt($('p2').value)||0,p3=parseInt($('p3').value)||0;
+  const units=p1+p2+p3;
+  const adr=num('adr'),occ=num('occ')/100,mid=num('mid'),mrate=num('mrate');
+  const cr=num('cr')/100;
+  // koji = tsubo×tsubo_price で計算済み
+  const rent=num('rent');           // 月額賃料（円）
+  const mrRatio=num('mr')/100;
+  const baby_r=num('baby_r')/100;
+  const term=parseInt($('term').value);
+  const life=parseInt($('life').value);
+  const ey=num('ey')/100;
+  const gpRate=num('gp')/100;
+  const auditAnn=num('audit')*10000;
+
+  // スライダー表示
+  $('v_adr').innerHTML=adr.toLocaleString()+'<span>円</span>';
+  $('v_occ').innerHTML=Math.round(occ*100)+'<span>%</span>';
+  $('v_mid').innerHTML=mid+'<span>回</span>';
+  $('v_mrate').innerHTML=mrate.toLocaleString()+'<span>円</span>';
+  $('v_cr').innerHTML=Math.round(cr*100)+'<span>%</span>';
+  const tsubo=parseInt($('tsubo').value)||25;
+  const tsubo_price=parseInt($('tsubo_price').value)||35;
+  const koji=tsubo*tsubo_price*10000;
+  $('v_tsubo').innerHTML=tsubo+'<span>坪</span>';
+  $('v_tsubo_price').innerHTML=tsubo_price+'<span>万/坪</span>';
+  $('v_rent').innerHTML=rent.toLocaleString()+'<span>円</span>';
+  $('v_mr').innerHTML=Math.round(mrRatio*100)+'<span>%</span>';
+  $('v_baby_r').innerHTML=(baby_r*100).toFixed(1)+'<span>%</span>';
+  $('v_term').innerHTML=term+'<span>年</span>';
+  const mterm=parseInt($('mterm').value)||6;
+  $('v_mterm').innerHTML=mterm+'<span>年</span>';
+  const ltv=num('ltv')/100;
+  $('v_ltv').innerHTML=(ltv*100).toFixed(0)+'<span>%</span>';
+  const loanRate=num('loan_rate')/100;
+  $('v_loan_rate').innerHTML=(loanRate*100).toFixed(1)+'<span>%</span>';
+  const bunk=parseInt($('bunk').value)||5;
+  $('v_bunk').innerHTML=bunk+'<span>棟/F</span>';
+  $('v_life').innerHTML=life+'<span>年</span>';
+  const mgmtFeeRate=num('mgmt_fee')/100;
+  $('v_mgmt_fee').innerHTML=Math.round(mgmtFeeRate*100)+'<span>%</span>';
+  $('v_ey').innerHTML=(ey*100).toFixed(1)+'<span>%</span>';
+  $('v_gp').innerHTML=(gpRate*100).toFixed(1)+'<span>%</span>';
+  $('v_audit').innerHTML=Math.round(auditAnn/10000)+'<span>万円</span>';
+
+  // ── EW採算 ──
+  const shortRev=adr*365*occ;
+  const midRev=mrate*mid;
+  const totalRev=shortRev+midRev;
+  const mgmtFee=totalRev*mgmtFeeRate;       // EW管理委託料（出口後・売上比）
+  const totalCost=totalRev*cr;
+  const grossProfit=totalRev-totalCost;  // EWの粗利
+  const rentAnn=rent*12;                 // 年間賃料
+  const ewProfit=grossProfit-rentAnn;    // EW営業利益
+  const coverage=rentAnn>0?grossProfit/rentAnn:0;
+
+  // シグナル
+  let sigCls,sigDotCls,sigMain,sigSub;
+  if(coverage>=1.5){sigCls='green';sigDotCls='green';sigMain='余裕あり（'+coverage.toFixed(2)+'倍）';sigSub='粗利が賃料の1.5倍以上。EWは十分な余力で賃料を支払えます。';}
+  else if(coverage>=1.1){sigCls='yellow';sigDotCls='yellow';sigMain='やや余裕あり（'+coverage.toFixed(2)+'倍）';sigSub='賃料支払は可能ですが余力は限られます。稼働率の変動に注意。';}
+  else if(coverage>=1.0){sigCls='yellow';sigDotCls='yellow';sigMain='ギリギリ（'+coverage.toFixed(2)+'倍）';sigSub='粗利≒賃料。稼働率・ADRが少し下がると赤字になります。';}
+  else{sigCls='red';sigDotCls='red';sigMain='支払困難（'+coverage.toFixed(2)+'倍）';sigSub='粗利が賃料を下回っています。賃料設定を下げるか稼働率を上げてください。';}
+
+  const sigHtml=sigCard(sigCls,sigDotCls,sigMain,sigSub);
+  $('sig_area').innerHTML=sigHtml;
+  $('sig_area2').innerHTML=sigHtml;
+
+
+
+  // カバレッジバー
+  const barW=Math.min(100,Math.round(coverage*50));
+  const barColor=coverage>=1.5?'var(--a3)':coverage>=1.0?'var(--warn)':'var(--red)';
+  $('cov_label').textContent='カバレッジ比率（粗利 ÷ 賃料）';
+  $('cov_val').textContent=coverage.toFixed(2)+'倍';
+  $('cov_bar').style.width=barW+'%';
+  $('cov_bar').style.background=barColor;
+
+  // ── ベビーFTK 初期コスト（全項目） ──
+  const bc_fudosan = num('bc_fudosan')*10000;
+  const bc_chukai  = bc_fudosan * 0.10;
+  const bc1        = koji;
+  const bc_design  = Math.round(koji / 1.1 * 0.08) * 1.1;
+  const bc_gaiku   = num('bc_gaiku')*10000;
+  const bc_kagu    = num('bc_kagu')*10000;
+  const bc_yobi    = num('bc_yobi')*10000;
+  const bc2        = num('bc2')*10000;
+  const bc4        = num('bc4')*10000;
+  const bc5        = num('bc5')*10000;
+  const bc3input   = $('bc3').value.trim();
+  let bc3;
+  if(bc3input===''||bc3input==='0'){
+    // upfrontはファンド1本で1回 → 棟数まとめると1棟あたり負担が減る
+    const base1 = bc_fudosan+bc_chukai+bc1+bc_design+bc_gaiku+bc_kagu+bc_yobi+bc2+bc4+bc5;
+    const fundTotal = base1 * bunk;           // ファンド1本の合計（upfront前）
+    const upfrontTotal = fundTotal/0.95*0.05; // ファンド全体のupfront
+    bc3 = upfrontTotal / bunk;                // 1棟あたり負担
+  } else {
+    bc3 = num('bc3')*10000;
+  }
+  const bcTot = bc_fudosan+bc_chukai+bc1+bc_design+bc_gaiku+bc_kagu+bc_yobi+bc2+bc3+bc4+bc5;
+
+  $('bc_chukai').textContent = m(bc_chukai);
+  $('bc1').textContent       = m(bc1);
+  $('bc1_note').textContent  = tsubo+'坪×'+tsubo_price+'万/坪';
+  $('bc_design').textContent = m(bc_design);
+  $('bc_tot').textContent    = m(bcTot);
+
+  // 全体額（N棟分）の表示
+  // upfrontはファンド本数×upfront額（bunk棟で1ファンド）
+  const numFunds = Math.ceil(p1/bunk)+Math.ceil(p2>0?p2/bunk:0)+Math.ceil(p3>0?p3/bunk:0);
+  const upfrontDisp = bc3 * bunk * numFunds; // 1ファンドのupfront × ファンド本数（表示用）
+  $('bc_fudosan_t').textContent = m(bc_fudosan*units);
+  $('bc_chukai_t').textContent  = m(bc_chukai*units);
+  $('bc1_t').textContent        = m(bc1*units);
+  $('bc_design_t').textContent  = m(bc_design*units);
+  $('bc_gaiku_t').textContent   = m(bc_gaiku*units);
+  $('bc_kagu_t').textContent    = m(bc_kagu*units);
+  $('bc_yobi_t').textContent    = m(bc_yobi*units);
+  $('bc2_t').textContent        = m(bc2*units);
+  $('bc3_t').textContent        = m(upfrontDisp);
+  $('bc4_t').textContent        = m(bc4*units);
+  $('bc5_t').textContent        = m(bc5*units);
+  $('bc_fund_total').textContent = m(bcTot*units)+'万円';
+  $('bc_fund_note').textContent  = units+'棟 / '+numFunds+'F';
+
+  // ── ベビーFTK 年次コスト ──
+  const ba1=num('ba1')*10000;
+  const ba2=bcTot*0.02;
+  const ba3=num('ba3')*10000;
+  const ba4=num('ba4')*10000;
+  const baTot=ba1+ba2+ba3+ba4;
+  $('ba2d').textContent=m(ba2);
+  $('ba_tot').textContent=m(baTot);
+  $('ba1t').textContent=m(ba1*term);
+  $('ba2t').textContent=m(ba2*term);
+  $('ba3t').textContent=m(ba3*term);
+  $('ba4t').textContent=m(ba4*term);
+  $('ba_tot_t').textContent=m(baTot*term);
+
+  // ── 出口・キャピタル ──
+  // 出口投資家は物件を買う→宿泊事業の収益力で評価
+  // 宿泊NOI = 売上 × (1 - EW経費率)
+  // 出口後もEWが運営継続 → EW管理委託料を引いたネットが出口投資家の実収益
+  const exitNOI = totalRev * (1 - cr);          // 宿泊NOI（売上×粗利率）
+  const exitIncome = exitNOI - mgmtFee;         // 出口投資家の実収益
+  const exitPrice = ey > 0 ? exitIncome / ey : 0;
+  const capGain = exitPrice - bcTot;
+
+  // EW損益表（exitIncome確定後に生成）
+  const ewRows=[
+    ['売上（短期＋中期）',totalRev,'pos'],
+    ['EW経費（経費率'+Math.round(cr*100)+'%）',-totalCost,'neg'],
+    ['粗利（宿泊NOI）',grossProfit,grossProfit>=0?'pos':'neg'],
+    ['ファンドへの賃料支払（運用中）',-rentAnn,'neg'],
+    ['EW 営業利益（運用中）',ewProfit,ewProfit>=0?'pos':'neg'],
+    ['─── 出口後（参考）───',null,'neu'],
+    ['EW管理委託料（売上×'+Math.round(mgmtFeeRate*100)+'%）',-mgmtFee,'warn'],
+    ['出口投資家の実収益',exitIncome,exitIncome>=0?'pos3':'neg'],
+  ];
+  let ewHtml='<div class="tbl-h" style="grid-template-columns:1fr 90px 80px 65px"><div>EW損益項目</div><div>年額</div><div>月額</div><div>売上比</div></div>';
+  ewRows.forEach(([nm,v,cls])=>{
+    if(v===null){
+      ewHtml+=`<div style="padding:4px 13px;font-size:10px;color:var(--g3);border-bottom:1px solid var(--bd);background:var(--s2)">${nm}</div>`;
+    } else {
+      const ratioStr = totalRev>0 ? (v/totalRev*100).toFixed(1)+'%' : '—';
+      const ratioColor = v>0 ? 'var(--a3)' : 'var(--g3)';
+      ewHtml+=`<div class="trow" style="grid-template-columns:1fr 90px 80px 65px"><div class="nm">${nm}</div><div class="${cls}">${m(v)}万</div><div class="${cls}">${Math.round(v/12/10000*100)/100}万</div><div style="text-align:right;font-family:var(--fm);font-size:10px;color:${ratioColor}">${ratioStr}</div></div>`;
+    }
+  });
+  $('ew_tbl').innerHTML=ewHtml;
+
+  $('r_rent').textContent=(rent/10000).toFixed(1)+'万円/月';
+  $('r_rent_y').textContent=fmtM(rentAnn);
+  $('r_rent_y_s').textContent=Math.round(rent/10000*10)/10+'万×12ヶ月';
+  $('r_exit').textContent=fmtM(exitPrice);
+  $('r_exit_s').textContent='実収益'+fmtM(exitIncome)+'÷'+pct(ey);
+  $('r_cap').textContent=fmtMp(capGain);
+  $('r_cap_s').textContent=fmtM(exitPrice)+' − '+fmtM(bcTot);
+  $('r_cap').className='cmv '+(capGain>=0?'c':'r');
+
+  // ── 資金調達コスト分析 ──
+  const totalPaidLife=rent*12*life;          // 事業期間全体の賃料総支払
+  const fundCostLife=baTot*life+bc3+bc2+bc4+bc5; // フィー・コスト合計（life年分）
+  const hardCost=bc_fudosan+bc_chukai+bc1+bc_design;
+  const effectiveRate=(totalPaidLife-hardCost)/hardCost;
+  const annualEffRate=effectiveRate/life;
+
+  let ftbl=`<div class="tbl"><div class="tbl-h" style="grid-template-columns:1fr 120px 120px"><div>調達コスト項目</div><div>合計（${life}年）</div><div>備考</div></div>`;
+  const frows=[
+    ['不動産+工事費（ハードコスト）',bc_fudosan+bc_chukai+bc1+bc_design,'pos','不動産購入+仲介+リノベ+設計'],
+    ['賃料総支払額（'+life+'年）',totalPaidLife,'neg',Math.round(rent/10000*10)/10+'万/月×'+life+'年'],
+    ['うち投資家リターン分',bcTot*baby_r*life,'neg','募集額×'+((baby_r*100).toFixed(1))+'%×'+life+'年'],
+    ['うちファンドコスト分',baTot*life+bc3+bc2+bc4+bc5,'neg','管理費・フィー等累計'],
+    ['実質調達コスト（賃料−工事費）',totalPaidLife-koji,'neg','工事費を得るための総コスト'],
+  ];
+  frows.forEach(([nm,v,cls,note])=>{
+    ftbl+=`<div class="trow" style="grid-template-columns:1fr 120px 120px"><div class="nm">${nm}</div><div class="${cls}">${m(v)}万</div><div style="font-size:10px;color:var(--g3)">${note}</div></div>`;
+  });
+  ftbl+=`<div class="trow tot" style="grid-template-columns:1fr 120px 120px"><div>実質調達コスト率（対工事費）</div><div class="neg">${pct(effectiveRate,0)}（年率${pct(annualEffRate,1)}）</div><div style="font-size:10px;color:var(--g3)">${life}年で回収する場合</div></div></div>`;
+  $('funding_tbl').innerHTML=ftbl;
+
+  // ── ベビーCF（PL収支ベース・BBK準拠：減価償却後の黒字範囲で分配） ──
+  // 減価償却をCF計算前に先行定義
+  const kojiEx_pre    = koji / 1.1 + bc_design / 1.1;  // リノベ工事費税抜+設計料税抜（償却対象）
+  const deprBldg_pre  = kojiEx_pre / life;           // 建物減価償却/年
+  const longPre_pre   = (bc2 + bc3) / life;          // 長期前払費用償却/年
+  const plAvail       = rentAnn - baTot - deprBldg_pre - longPre_pre; // PL収支（分配の上限）
+
+  // ── 分配ロジック（ウォーターフォール型）──
+  // 個人投資家（pInv）：年利baby_r%キャップ（安定リターン）
+  // マザーLPS（mInv）：キャップなし（キャピタル含め余剰も受取・アップサイド取得）
+  const pInv = bcTot*(1-mrRatio);   // 個人出資額
+  const mInv = bcTot*mrRatio;       // マザー出資額
+  const pCapTarget = pInv*baby_r;   // 個人の目標年利額
+
+  // 各年の分配内訳
+  const distByYear=[];       // 全体分配（個人+マザー合計）
+  const mDistByYear=[];      // マザー受取（余剰含む）
+  const pDistByYear=[];      // 個人受取（キャップあり）
+  let shortfall=0;           // 個人向け不足繰越
+
+  for(let t=0;t<term;t++){
+    const capThisYear=t===term-1?capGain:0;
+    const available=Math.max(0, plAvail+capThisYear);  // 分配可能総額
+
+    // GOOD SOIL型優先株ウォーターフォール
+    // ① 個人優先：目標年利(baby_r)+繰越不足を先取り（available上限）
+    const pTarget = pCapTarget + shortfall;
+    const pDist = Math.min(available, pTarget);
+    shortfall = Math.max(0, pTarget - pDist);
+
+    // ② マザー：残余を総取り（キャップなし・アップサイド享受）
+    const mDist = available - pDist;
+
+    distByYear.push(pDist+mDist);
+    mDistByYear.push(mDist);
+    pDistByYear.push(pDist);
+  }
+
+  const totalTarget_actual=distByYear.reduce((a,b)=>a+b,0);
+  const mTotalDist=mDistByYear.reduce((a,b)=>a+b,0);
+  const pTotalDist=pDistByYear.reduce((a,b)=>a+b,0);
+  const actualYield=pTotalDist/pInv/term;       // 個人の実現年利
+  const mActualYield=mTotalDist/mInv/term;      // マザーの実現年利（参考）
+
+  // CFテーブル（7列：年度・賃料・現金経費・減価償却・キャピタル・分配金・年利換算）
+  const cols7 = '50px 1fr 1fr 1fr 1fr 1fr 1fr';
+  let cfh=`<div class="tbl"><div class="tbl-h" style="grid-template-columns:${cols7}"><div>年度</div><div>賃料収入</div><div>現金経費・減価償却</div><div>キャピタル</div><div>マザー受取</div><div>個人受取(8%cap)</div><div>個人年利</div></div>`;
+  let cumDistCheck=0;
+  for(let t=0;t<term;t++){
+    const thisCap=t===term-1?capGain:0;
+    const md=mDistByYear[t];
+    const pd=pDistByYear[t];
+    cumDistCheck+=md+pd;
+    cfh+=`<div class="trow" style="grid-template-columns:${cols7}">
+      <div class="nm">${t+1}年目</div>
+      <div class="pos">${m(rentAnn)}万</div>
+      <div class="neg" style="color:var(--g3)">−${m(baTot+deprBldg_pre+longPre_pre)}万</div>
+      <div class="${thisCap>=0?'pos3':'neg'}">${thisCap!==0?fmtMp(thisCap):'—'}</div>
+      <div class="pos">${m(md)}万</div>
+      <div class="pos2">${m(pd)}万</div>
+      <div class="${pDistByYear[t]/pInv>=baby_r*0.9?'pos2':'warn'}">${pct(pd/pInv)}</div>
+    </div>`;
+  }
+  const yieldCls = actualYield>=baby_r ? 'pos2' : 'warn';
+  cfh+=`<div class="trow tot" style="grid-template-columns:${cols7}">
+    <div>累計</div><div></div><div></div>
+    <div class="${capGain>=0?'pos3':'neg'}">${fmtMp(capGain)}</div>
+    <div class="pos">${m(mTotalDist)}万</div>
+    <div class="${yieldCls}">${m(pTotalDist)}万</div>
+    <div class="${yieldCls}">${pct(actualYield)}/年</div>
+  </div>
+  <div style="padding:6px 13px;font-size:10px;background:rgba(91,168,212,0.06);border-top:1px solid var(--bd);color:var(--g3);line-height:1.8">
+    <span style="color:var(--a)">マザー</span>：累計${m(mTotalDist)}万（均し${pct(mActualYield)}/年・キャップなし・個人余剰含む）　
+    <span style="color:var(--a2)">個人</span>：累計${m(pTotalDist)}万（均し${pct(actualYield)}/年・${pct(baby_r)}キャップ）
+  </div></div>`;
+  $('baby_cf').innerHTML=cfh;
+
+  // ── ベビーFTK PL ──
+  // 減価償却はCF計算前に定義済みの変数を流用
+  const kojiEx    = kojiEx_pre;
+  const deprBldg  = deprBldg_pre;
+  const longPrepaid = longPre_pre;
+  const ftkPLRows = [
+    ['賃料収入',           rentAnn,          'pos'],
+    ['不動産関連費',       -ba1,             'neg'],
+    ['ファンド管理費',     -ba2,             'neg'],
+    ['経理・雑費',         -(ba3+ba4),       'neg'],
+    ['減価償却費（建物）', -deprBldg,        'neg'],
+    ['長期前払費用償却',   -longPrepaid,     'neg'],
+    ['─ PL収支（税引前）',null,             'sep'],
+  ];
+  const ftkPLProfit = rentAnn - ba1 - ba2 - ba3 - ba4 - deprBldg - longPrepaid;
+  const ftkCF = ftkPLProfit + deprBldg + longPrepaid; // 非現金費用を戻す
+  let fplHtml = '<div class="tbl-h" style="grid-template-columns:1fr 100px 100px 120px"><div>項目</div><div>年額</div><div>月額換算</div><div>備考</div></div>';
+  ftkPLRows.forEach(([nm,v,cls])=>{
+    if(v===null){
+      fplHtml+=`<div style="padding:5px 13px;border-bottom:1px solid var(--bd);background:var(--s2);display:grid;grid-template-columns:1fr 100px 100px 120px;font-size:11px;font-family:var(--fm);font-weight:600"><div style="color:var(--g)">PL収支（税引前）</div><div style="text-align:right;color:${ftkPLProfit>=0?'var(--a)':'var(--red)'}">  ${m(ftkPLProfit)}万</div><div style="text-align:right;color:var(--g3)">${Math.round(ftkPLProfit/12/10000*10)/10}万</div><div></div></div>`;
+    } else {
+      fplHtml+=`<div class="trow" style="grid-template-columns:1fr 100px 100px 120px"><div class="nm">${nm}</div><div class="${cls}">${m(v)}万</div><div class="${cls}">${Math.round(v/12/10000*10)/10}万</div><div style="font-size:10px;color:var(--g3)">${nm==='減価償却費（建物）'?'工事費税抜÷'+life+'年':nm==='長期前払費用償却'?'(PF+upfront)÷'+life+'年':''}</div></div>`;
+    }
+  });
+  // CF行
+  fplHtml+=`<div class="trow" style="grid-template-columns:1fr 100px 100px 120px"><div class="nm" style="color:var(--g3);padding-left:8px">＋減価償却等（非現金費用戻し）</div><div class="pos3">+${m(deprBldg+longPrepaid)}万</div><div></div><div></div></div>`;
+  fplHtml+=`<div class="trow tot" style="grid-template-columns:1fr 100px 100px 120px"><div>営業CF（実分配可能額）</div><div class="${ftkCF>=0?'pos':'neg'}">${m(ftkCF)}万</div><div class="pos2">${Math.round(ftkCF/12/10000*10)/10}万/月</div><div style="font-size:10px;color:var(--g3)">分配金の実際の原資</div></div>`;
+  $('ftk_pl_tbl').innerHTML='<div class="tbl">'+fplHtml+'</div>';
+
+  // ── 出口投資家 PL ──
+  // 出口投資家は物件を取得価格（exitPrice）で購入
+  // 耐用年数：木造住宅の場合22年（宿泊用は17年だが入力値のlifeを使用）
+  const exitDepr = exitPrice > 0 ? exitPrice / life : 0;  // 取得価格÷耐用年数
+  const exitPLProfit = exitIncome - exitDepr;
+  const exitCF = exitPLProfit + exitDepr; // = exitIncome
+  const exitYield = exitPrice > 0 ? exitIncome / exitPrice : 0;
+  let eplHtml = '<div class="tbl-h" style="grid-template-columns:1fr 100px 100px 120px"><div>項目</div><div>年額</div><div>月額換算</div><div>備考</div></div>';
+  const exitPLRows = [
+    ['売上（宿泊収入）',    totalRev,     'pos',  ''],
+    ['EW経費（'+Math.round(cr*100)+'%）', -totalCost, 'neg', '経費率スライダー'],
+    ['粗利（NOI）',         exitNOI,      exitNOI>=0?'pos':'neg', ''],
+    ['EW管理委託料（'+Math.round(mgmtFeeRate*100)+'%）', -mgmtFee, 'neg', '出口後の運営委託'],
+    ['実収益',              exitIncome,   exitIncome>=0?'pos':'neg', '出口価格逆算の基礎'],
+    ['減価償却費',          -exitDepr,    'neg',  '取得価格÷'+life+'年'],
+  ];
+  exitPLRows.forEach(([nm,v,cls,note])=>{
+    eplHtml+=`<div class="trow" style="grid-template-columns:1fr 100px 100px 120px"><div class="nm">${nm}</div><div class="${cls}">${m(v)}万</div><div class="${cls}">${Math.round(v/12/10000*10)/10}万</div><div style="font-size:10px;color:var(--g3)">${note}</div></div>`;
+  });
+  eplHtml+=`<div style="padding:5px 13px;border-bottom:1px solid var(--bd);background:var(--s2);display:grid;grid-template-columns:1fr 100px 100px 120px;font-size:11px;font-family:var(--fm);font-weight:600"><div style="color:var(--g)">税引前利益</div><div style="text-align:right;color:${exitPLProfit>=0?'var(--a)':'var(--red)'}">  ${m(exitPLProfit)}万</div><div style="text-align:right;color:var(--g3)">${Math.round(exitPLProfit/12/10000*10)/10}万</div><div style="font-size:10px;color:var(--g3)">取得価格${m(exitPrice)}万</div></div>`;
+  eplHtml+=`<div class="trow" style="grid-template-columns:1fr 100px 100px 120px"><div class="nm" style="padding-left:8px">＋減価償却（非現金費用戻し）</div><div class="pos3">+${m(exitDepr)}万</div><div></div><div></div></div>`;
+  eplHtml+=`<div class="trow tot" style="grid-template-columns:1fr 100px 100px 120px"><div>CF（税引前）</div><div class="${exitCF>=0?'pos':'neg'}">${m(exitCF)}万</div><div class="pos2">${Math.round(exitCF/12/10000*10)/10}万/月</div><div style="font-size:10px;color:var(--g3)">表面利回り ${pct(exitYield)}</div></div>`;
+  $('exit_pl_tbl').innerHTML='<div class="tbl">'+eplHtml+'</div>';
+
+  // ── 按分 ──
+  // mInv・pInvはCF計算セクションで定義済みのため、按分計算はそのまま流用
+  const mInc=mTotalDist;   // マザー受取（キャップなし・余剰含む）
+  const pInc=pTotalDist;   // 個人受取（8%キャップ）
+  const mCap=capGain*mrRatio, pCap=capGain*(1-mrRatio);
+  // 累計利回り：インカムのみ（キャピタルは参考表示のみ・利回り計算に含めない）
+  const mTR=mInv>0?mInc/mInv:0;
+  const pTR=pInv>0?pInc/pInv:0;
+
+  $('bm_inv').textContent=fmtM(mInv);$('bm_inv_s').textContent=Math.round(mrRatio*100)+'%';
+  $('bm_inc').textContent=fmtM(mInc);$('bm_inc_s').textContent='目標'+fmtM(bcTot*mrRatio*baby_r*term);
+  $('bm_cap').textContent=fmtMp(mCap);
+  $('bm_r').textContent=pct(mTR);$('bm_r_s').textContent='均し年率'+pct(mTR/term)+'（インカム+キャピタル含む）';
+  $('bp_inv').textContent=fmtM(pInv);$('bp_inv_s').textContent=Math.round((1-mrRatio)*100)+'%';
+  $('bp_inc').textContent=fmtM(pInc);$('bp_inc_s').textContent='目標'+fmtM(bcTot*(1-mrRatio)*baby_r*term);
+  $('bp_cap').textContent=fmtMp(pCap);
+  $('bp_r').textContent=pct(pTR);$('bp_r_s').textContent='均し年率'+pct(pTR/term)+'（インカムのみ）';
+
+  // ── マザー初期コスト ──
+  const mc1=num('mc1')*10000,mc2=num('mc2')*10000,mc3=num('mc3')*10000,mc4=num('mc4')*10000;
+  const mcTot=mc1+mc2+mc3+mc4;
+  $('mc_tot').textContent=m(mcTot);
+
+  // ── マザー年次コスト ──
+  const fundInv=mInv*units;
+  // LPS融資（maTot計算前に先行定義：GP報酬はLP実出資ベース）
+  const lpsLoan = fundInv * ltv;
+  const lpEquity = fundInv * (1-ltv);      // LP実出資額（GP報酬の基準）
+  const ma1=lpEquity*gpRate,ma2=auditAnn;  // GP報酬はLP実出資ベース
+  const ma3=num('ma3')*10000,ma4=num('ma4')*10000,ma5=num('ma5')*10000;
+  const maTot=ma1+ma2+ma3+ma4+ma5;
+  $('ma1d').textContent=m(ma1);$('ma1t').textContent=m(ma1*term);
+  $('ma2d').textContent=m(ma2);$('ma2t').textContent=m(ma2*term);
+  $('ma3t').textContent=m(ma3*term);$('ma4t').textContent=m(ma4*term);
+  $('ma5t').textContent=m(ma5*term);
+  $('ma_tot').textContent=m(maTot);$('ma_tot_t').textContent=m(maTot*mterm)+'（'+mterm+'年）';
+
+  // ── マザー収支（PL/CF分離） ──
+  const mRecvTotal=mInc*units;
+  const repayBullet = document.querySelector('input[name="repay_type"]:checked')?.value !== "annuity";
+  // 融資利息（PL費用）と元本返済（CF財務）を分離
+  const lpsInterest = lpsLoan * loanRate;  // 年間利息（PL費用）
+  // 元利均等の場合の年間返済額
+  const lpsAnnuityPmt = lpsLoan>0
+    ? lpsLoan*loanRate*Math.pow(1+loanRate,mterm)/(Math.pow(1+loanRate,mterm)-1)
+    : 0;
+  // PL費用：利息のみ（元利均等は利息部分のみ、バレットは全額利息）
+  const lpsInterestPmt = lpsLoan>0 ? lpsInterest : 0;
+  // CF元本返済：バレット=最終年一括、元利均等=毎年元本部分
+  const lpsAnnuityPrincipal = repayBullet ? 0 : lpsAnnuityPmt - lpsInterestPmt;
+
+  // PLベースのコスト（利息含む、元本返済除く）
+  const mCostPL = mcTot + (maTot + lpsInterestPmt) * mterm;
+  const lpProfitPL = mRecvTotal - mCostPL;
+  const lpRateAnn = lpEquity>0 ? lpProfitPL/lpEquity/mterm : 0;
+
+  $('m_units').textContent=units;
+  $('m_inv').textContent=fmtM(lpEquity);$('m_inv_s').textContent=ltv>0?'LP実出資（融資'+pct(ltv)+'）':'マザーFTK出資総額';
+  $('m_recv').textContent=fmtM(mRecvTotal);$('m_recv_s').textContent='年利'+((baby_r*100).toFixed(1))+'%×投資額×'+term+'年';
+  $('m_cost').textContent=fmtM(mCostPL);$('m_cost_s').textContent='初期'+fmtM(mcTot)+'＋年次'+fmtM(maTot)+'×'+term+'年';
+  $('m_lp').textContent=fmtM(lpProfitPL);
+  // m_lpr等の表示はCFループ後に移動
+
+  // ── マザーCF（Phase別時系列：6列） ──
+  // Phase1: 1年目着工→(1+term)年目売却、Phase2: 2年目→(2+term)年目、Phase3: 3年目→(3+term)年目
+  // 各年の受取 = そのPhaseの運用年に対応するdistByYear[t]×マザー比率×棟数
+  // 例：mterm=6, term=3の場合
+  //   1年目: Phase1の0年目(着工中) → 受取なし
+  //   2年目: Phase1の1年目インカム + Phase2の0年目(着工中)
+  //   3年目: Phase1の2年目インカム + Phase2の1年目 + Phase3の0年目
+  //   4年目: Phase1の3年目(売却) + Phase2の2年目 + Phase3の1年目
+  //   5年目: Phase2の3年目(売却) + Phase3の2年目
+  //   6年目: Phase3の3年目(売却)
+  // Phase全て同時着工（直近組成v1：Phase1に集約）
+  // 将来の複数フェーズシナリオではphaseStartsを[0,1,2]等に変更
+  const phaseStarts=[0,0,0];
+  const phaseCounts=[p1,p2,p3];
+
+  // ── マザーLPS 年次PL・CF（GP報酬段階減少・損失繰越あり）──
+  // 投資期間：1〜term年目、投資期間後：(term+1)〜mterm年目
+  // 各年の残存FTK投資簿価（投資期間後のGP報酬計算用）
+  // Phase1は(1+term)年目売却、Phase2は(2+term)年目、Phase3は(3+term)年目
+  // 年t（0-indexed）時点での残存棟数
+  // 年t（0-indexed）時点での「取得済みかつ未売却」棟数
+  // Phase着工：start年目から取得、売却：(start+term)年目
+  function activeUnits(t){
+    let n=0;
+    phaseStarts.forEach((start,pi)=>{
+      const acquired = t >= start;           // 着工済み
+      const notSold  = t < start+term;       // まだ売却していない
+      if(acquired && notSold) n += phaseCounts[pi];
+    });
+    return n;
+  }
+
+  const mCols='45px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 65px';
+  let mcfh=`<div class="tbl"><div class="tbl-h" style="grid-template-columns:${mCols}">
+    <div>年度</div><div>ベビー受取</div><div>残存FTK簿価</div><div>GP報酬</div><div>監査等</div><div>融資利息</div><div>PL純利益</div><div>損失繰越</div><div>LP分配金</div><div>年利換算</div>
+  </div>`;
+  let mCumPL=0;
+  let mLpCumDist=0;
+  let plCarryover=0;
+
+  const lpCfArray=[-(lpEquity+mcTot)];
+
+  for(let t=0;t<mterm;t++){
+    let recv=0;
+    phaseStarts.forEach((start,pi)=>{
+      const phaseYear=t-start;
+      if(phaseYear>=0 && phaseYear<term){
+        recv += mDistByYear[phaseYear]*phaseCounts[pi];
+      }
+    });
+
+    // GP報酬：投資期間中はlpEquityベース、投資期間後は残存FTK簿価ベース
+    const isInvestPeriod = t < term;  // 投資期間（Phase着工期間）
+    // 残存FTK簿価（取得済みかつ未売却の棟数ベース）→ gpBase計算の前に定義
+    const activeN = activeUnits(t);
+    const ftk_book = bcTot * mrRatio * activeN;
+    // GP報酬：投資期間中はlpEquity、投資期間後はftk_book
+    const gpBase = isInvestPeriod ? lpEquity : ftk_book;
+    const gpCost = gpBase * gpRate;
+
+    const fixedCost = ma2 + ma3 + ma4 + ma5;
+    const intCost = lpsInterestPmt;
+
+    const plNetRaw = recv - gpCost - fixedCost - intCost;
+
+    const carryBefore = plCarryover;
+    const plWithCarry = plNetRaw - carryBefore;
+    const lpDist = Math.max(0, plWithCarry);
+    plCarryover = Math.max(0, -plWithCarry);
+
+    mCumPL += plNetRaw;
+    mLpCumDist += lpDist;
+
+    const principalReturn = t===mterm-1 ? lpEquity : 0;
+    lpCfArray.push(lpDist + principalReturn);
+
+    const annYield = lpEquity>0 ? lpDist/lpEquity : 0;
+    const carryDisp = carryBefore>0
+      ? (plCarryover>0 ? m(carryBefore)+'→'+m(plCarryover)+'万' : m(carryBefore)+'→解消')
+      : '—';
+    const carryCls = carryBefore>0 ? (plCarryover>0?'neg':'warn') : 'neu';
+    // GP報酬のツールチップ：計算根拠を明示
+    const gpTitle = isInvestPeriod
+      ? '【投資期間中】LP実出資額'+m(lpEquity)+'万 × '+pct(gpRate)+' = '+m(gpCost)+'万'
+      : '【投資期間後】残存FTK簿価'+m(ftk_book)+'万（'+activeN+'棟）× '+pct(gpRate)+' = '+m(gpCost)+'万';
+    const gpPeriodLabel = isInvestPeriod ? '(投資期間)'  : '(回収期間)';
+    mcfh+=`<div class="trow" style="grid-template-columns:${mCols}">
+      <div class="nm">${t+1}年目<br><span style="font-size:9px;color:var(--g3)">${gpPeriodLabel}</span></div>
+      <div class="pos">${m(recv)}万</div>
+      <div style="text-align:right;font-family:var(--fm);font-size:11px;color:var(--g2)">${m(ftk_book)}万</div>
+      <div class="neg" title="${gpTitle}" style="cursor:help">−${m(gpCost)}万 ⓘ</div>
+      <div class="neg">−${m(fixedCost)}万</div>
+      <div class="${intCost>0?'neg':'neu'}">${intCost>0?'−'+m(intCost):'—'}万</div>
+      <div class="${plNetRaw>=0?'pos2':'neg'}">${m(plNetRaw)}万</div>
+      <div class="${carryCls}" style="font-size:10px">${carryDisp}</div>
+      <div class="${lpDist>0?'pos':'neu'}">${lpDist>0?m(lpDist):'—'}万</div>
+      <div class="${annYield>=baby_r*0.5?'pos2':'warn'}">${pct(annYield)}</div>
+    </div>`;
+  }
+  const mLpYield=lpEquity>0?mLpCumDist/lpEquity/mterm:0;
+  const lpRateAnn_actual=mLpYield;
+
+  // ── IRR計算（ニュートン法） ──
+  function calcIRR(cfs){
+    let r=0.1;
+    for(let i=0;i<200;i++){
+      let npv=0,dnpv=0;
+      cfs.forEach((cf,t)=>{
+        const disc=Math.pow(1+r,t);
+        npv+=cf/disc;
+        dnpv-=t*cf/disc/(1+r);
+      });
+      if(Math.abs(npv)<0.01) break;
+      if(Math.abs(dnpv)<0.0001) break;
+      r-=npv/dnpv;
+      if(r<-0.99) r=-0.99;
+    }
+    return r;
+  }
+  const mIRR = calcIRR(lpCfArray);
+  const mMOIC = lpEquity>0 ? (mLpCumDist+lpEquity)/(lpEquity+mcTot) : 0;
+  $('m_lpr').textContent=pct(lpRateAnn_actual);$('m_lpr_s').textContent='LP実出資ベース累計'+pct(lpEquity>0?mLpCumDist/lpEquity:0)+'÷'+mterm+'年';
+  $('m_vs').textContent=pct(lpRateAnn_actual)+' vs '+pct(baby_r);
+  $('m_vs').className='cmv '+(lpRateAnn_actual>=baby_r*0.6?'b':'r');
+  const mYieldCls=mLpYield>=lpRateAnn_actual*0.95?'pos2':'warn';
+  const irrCls = mIRR>=0.05?'pos2':mIRR>=0?'warn':'neg';
+  const moicCls = mMOIC>=1.5?'pos2':mMOIC>=1.0?'warn':'neg';
+  const lossCum = Math.abs(Math.min(0, mCumPL));
+  const lossNote = lossCum>0
+    ? '<div style="padding:4px 13px;font-size:10px;color:var(--g3);border-top:1px solid var(--bd)">'
+      + 'PL純利益累計 '+m(mCumPL)+'万 ／ LP分配累計 '+m(mLpCumDist)+'万（差 '+m(lossCum)+'万 = 赤字年の損失・繰越なし）'
+      + '</div>'
+    : '';
+  mcfh+=`<div class="trow tot" style="grid-template-columns:${mCols}">
+    <div>累計</div><div></div><div></div><div></div><div></div><div></div>
+    <div class="${mCumPL>=0?'pos2':'neg'}">${m(mCumPL)}万</div>
+    <div></div>
+    <div class="${mYieldCls}">${m(mLpCumDist)}万</div>
+    <div class="${mYieldCls}">${pct(lpRateAnn_actual)}/年</div>
+  </div>${lossNote}`;
+  mcfh+=`<div style="padding:8px 13px;background:rgba(91,168,212,0.07);border-top:1px solid var(--bd);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+    <div style="text-align:center">
+      <div style="font-size:10px;color:var(--g3)">均した年利（LP実出資ベース）</div>
+      <div style="font-family:var(--fm);font-weight:700;font-size:16px;color:${mYieldCls}">${pct(lpRateAnn_actual)}</div>
+      <div style="font-size:9px;color:var(--g3);margin-top:2px">累計分配 ÷ LP実出資額 ÷ 存続年数</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:10px;color:var(--g3)">IRR（内部収益率）</div>
+      <div style="font-family:var(--fm);font-weight:700;font-size:16px;color:${irrCls}">${pct(mIRR)}</div>
+      <div style="font-size:9px;color:var(--g3);margin-top:2px">元本返還を加味した実質年利。NPV=0となる割引率</div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:10px;color:var(--g3)">MOIC（投資倍率）</div>
+      <div style="font-family:var(--fm);font-weight:700;font-size:16px;color:${moicCls}">${mMOIC.toFixed(2)}x</div>
+      <div style="font-size:9px;color:var(--g3);margin-top:2px">（分配累計+元本） ÷ 投下資本。1.0x=元本回収</div>
+    </div>
+  </div></div>`;
+  // 融資CF情報（PLに含めない）
+  const loanCFNote = lpsLoan>0 ? `<div style='margin-top:6px;padding:8px 13px;background:rgba(212,168,67,0.06);border-radius:6px;font-size:10px;color:var(--g3);line-height:1.8'><span style='color:var(--a);font-weight:600'>融資CF（PL外・参考）</span>　融資受入：+${m(lpsLoan)}万（0年目）　利息：−${m(lpsInterestPmt)}万/年（PL費用に含む）　${repayBullet?'元本一括返済：−'+m(lpsLoan)+'万（'+mterm+'年目末）':'元本均等返済：−'+m(lpsAnnuityPrincipal)+'万/年'}</div>` : '';
+  const mNoteHtml=`<div style='margin-top:8px;padding:10px 13px;background:var(--s2);border-radius:7px;border-left:3px solid var(--bd2);font-size:10px;color:var(--g3);line-height:1.9'><div style='color:var(--a2);font-weight:700;margin-bottom:4px'>計算の前提</div><div>① Phase1を1年目着工・Phase2を2年目・Phase3を3年目着工と仮定</div><div>② 各PhaseのFTK売却は着工から${term}年後（Phase1→${1+term}年目、Phase2→${2+term}年目、Phase3→${3+term}年目）</div><div>③ 各棟の1棟あたり収支（インカム・キャピタル）は全Phase共通で計算</div><div>④ 分配金 = 純収益（受取 − 年次コスト）のうち黒字分のみ。マザー存続${mterm}年で均した年利を表示</div><div style='color:var(--a3);margin-top:5px'>※ 前半（1〜3年目）は運用棟数が少なくインカム中心、後半（4〜6年目）は順次FTK売却によりキャピタルが集中する構造</div></div>`;
+  $('mother_cf').innerHTML=mcfh+loanCFNote+mNoteHtml;
+
+  // ── サマリー ──
+  const totalBabyFund=bcTot*units;
+  const totalMInv=mInv*units, totalPInv=pInv*units;
+
+  $('s_baby').textContent=pct(actualYield);$('s_baby_s').textContent='実現年利（目標'+pct(baby_r)+'）';
+  $('s_lp').textContent=pct(mIRR);
+  $('s_lp_s').textContent='IRR（MOIC '+mMOIC.toFixed(2)+'x / 均し年利'+pct(lpRateAnn_actual)+'）';
+  $('s_exit').textContent=pct(ey);
+  $('s_bfund').textContent=fmtM(totalBabyFund);$('s_bfund_s').textContent=units+'棟合算';
+  const fundsTotal=Math.ceil(p1/bunk)+Math.ceil(p2/bunk)+(p3>0?Math.ceil(p3/bunk):0);
+  $('s_fund_num').textContent=fundsTotal+'本';
+  $('s_fund_num_s').textContent=bunk+'棟/F（'+units+'棟÷'+bunk+'）';
+  $('s_minv').textContent=fmtM(totalMInv);$('s_minv_s').textContent=Math.round(mrRatio*100)+'%分';
+  $('s_pinv').textContent=fmtM(totalPInv);$('s_pinv_s').textContent=Math.round((1-mrRatio)*100)+'%分';
+  const hardCostPerUnit=bc_fudosan+bc_chukai+bc1+bc_design;
+  $('s_koji').textContent=fmtM(hardCostPerUnit*units);$('s_koji_s').textContent=units+'棟×'+m(hardCostPerUnit)+'万';
+
+  // Phase別
+  const phases=[['Phase 1',p1],['Phase 2',p2],['Phase 3',p3]];
+  let ptbl=`<div class="tbl"><div class="tbl-h" style="grid-template-columns:90px 60px 1fr 1fr 1fr 1fr"><div>Phase</div><div>棟数</div><div>FTK募集額</div><div>マザー出資</div><div>個人投資家</div><div>EW調達工事費</div></div>`;
+  phases.forEach(([nm,n])=>{
+    if(n===0)return;
+    const fNum=Math.ceil(n/bunk);
+    ptbl+=`<div class="trow" style="grid-template-columns:90px 50px 50px 1fr 1fr 1fr">
+      <div class="nm">${nm}</div><div class="neu">${n}棟</div>
+      <div class="neu">${fNum}本</div>
+      <div class="pos">${m(bcTot*n)}万</div>
+      <div class="pos2">${m(mInv*n)}万</div>
+      <div class="pos3">${m(pInv*n)}万</div>
+    </div>`;
+  });
+  const totalFunds=Math.ceil(units/bunk)*3; // 概算（Phase別に切り上げ）
+  const totalFundsExact=Math.ceil(p1/bunk)+Math.ceil(p2/bunk)+Math.ceil(p3/bunk);
+  ptbl+=`<div class="trow tot" style="grid-template-columns:90px 50px 50px 1fr 1fr 1fr">
+    <div>合計</div><div>${units}棟</div>
+    <div>${totalFundsExact}本</div>
+    <div class="pos">${m(totalBabyFund)}万</div>
+    <div class="pos2">${m(totalMInv)}万</div>
+    <div class="pos3">${m(totalPInv)}万</div>
+  </div></div>`;
+  $('phase_tbl').innerHTML=ptbl;
+
+  // ── EWマネタイズ（全棟・全期間） ──
+  // 初期収入（1回限り・全棟合計）
+  const ew_pfee      = bc2 * units;           // ①企画PFフィー
+  const ew_design    = bc_design * units;     // ②建築設計料
+  const ew_upfront   = bc3 * units;           // ③FTK upfrontフィー
+  const ew_init_total= ew_pfee + ew_design + ew_upfront;
+
+  // 運用中収入（年次・全棟・全期間）
+  const ew_mgmt_ann  = ba2 * units;           // ④FTK管理費（年2%×全棟）
+  const ew_mgmt_total= ew_mgmt_ann * term;    // 期間合計
+  const ew_gp_ann    = fundInv * gpRate;      // ⑤GP管理報酬（年次）
+  const ew_gp_total  = ew_gp_ann * term;      // 期間合計
+
+  // 合計（GPあり/なし）
+  const ew_total_nogp = ew_init_total + ew_mgmt_total;
+  const ew_total_gp   = ew_total_nogp + ew_gp_total;
+
+  // テーブル生成
+  const mCol = '1fr 90px 90px 100px';
+  let emtbl = `<div class="tbl">
+    <div class="tbl-h" style="grid-template-columns:${mCol}"><div>収入項目</div><div>タイミング</div><div>金額</div><div>備考</div></div>`;
+
+  const emRows = [
+    ['① 企画PFフィー',    '初期',   ew_pfee,       '150万×'+units+'棟'],
+    ['② 建築設計料',       '初期',   ew_design,     '工事費8%×'+units+'棟'],
+    ['③ FTK upfrontフィー','初期',   ew_upfront,    '募集額5%×'+units+'棟'],
+  ];
+  emRows.forEach(([nm,tim,v,note])=>{
+    emtbl+=`<div class="trow" style="grid-template-columns:${mCol}">
+      <div class="nm">${nm}</div>
+      <div style="font-size:10px;color:var(--a);font-family:var(--fm)">${tim}</div>
+      <div class="pos">${m(v)}万</div>
+      <div style="font-size:10px;color:var(--g3)">${note}</div>
+    </div>`;
+  });
+
+  // 初期合計
+  emtbl+=`<div class="trow tot" style="grid-template-columns:${mCol}">
+    <div>初期収入 小計</div><div></div>
+    <div class="pos">${m(ew_init_total)}万</div><div></div>
+  </div>`;
+
+  // 区切り
+  emtbl+=`<div style="padding:4px 13px;font-size:10px;color:var(--g3);border-bottom:1px solid var(--bd);background:var(--s2)">── 運用中（${term}年間）──</div>`;
+
+  // 運用中
+  const emRows2 = [
+    ['④ FTK管理費（年2%）', '毎年', ew_mgmt_ann, ew_mgmt_total, '募集額×2%×'+units+'棟'],
+  ];
+  emRows2.forEach(([nm,tim,ann,total,note])=>{
+    emtbl+=`<div class="trow" style="grid-template-columns:${mCol}">
+      <div class="nm">${nm}</div>
+      <div style="font-size:10px;color:var(--a2);font-family:var(--fm)">${ann>0?m(ann)+'万/年':tim}</div>
+      <div class="pos2">${m(total)}万</div>
+      <div style="font-size:10px;color:var(--g3)">${note}×${term}年</div>
+    </div>`;
+  });
+
+  // GP管理報酬（分けて表示）
+  emtbl+=`<div style="padding:4px 13px;font-size:10px;color:var(--g3);border-bottom:1px solid var(--bd);background:var(--s2)">── GP管理報酬（マザーLPS運用時・任意）──</div>`;
+  emtbl+=`<div class="trow" style="grid-template-columns:${mCol}">
+    <div class="nm">⑤ GP管理報酬</div>
+    <div style="font-size:10px;color:var(--a2);font-family:var(--fm)">${m(ew_gp_ann)}万/年</div>
+    <div class="pos2">${m(ew_gp_total)}万</div>
+    <div style="font-size:10px;color:var(--g3)">投資額×${(gpRate*100).toFixed(1)}%×${term}年</div>
+  </div>`;
+
+  // 合計2パターン
+  emtbl+=`<div class="trow tot" style="grid-template-columns:${mCol};background:rgba(212,168,67,0.06)">
+    <div style="color:var(--a)">合計（GP管理報酬なし）</div><div></div>
+    <div class="pos" style="font-size:16px">${m(ew_total_nogp)}万</div>
+    <div style="font-size:10px;color:var(--g3)">初期+管理費のみ</div>
+  </div>`;
+  emtbl+=`<div class="trow tot" style="grid-template-columns:${mCol};background:rgba(91,168,212,0.06)">
+    <div style="color:var(--a2)">合計（GP管理報酬含む）</div><div></div>
+    <div class="pos2" style="font-size:16px">${m(ew_total_gp)}万</div>
+    <div style="font-size:10px;color:var(--g3)">GP報酬${m(ew_gp_total)}万を加算</div>
+  </div>`;
+
+  emtbl+='</div>';
+  $('ew_monetize_tbl').innerHTML=emtbl;
+}
+
+calc();
+
+// ── シナリオ保存・読み込み ──
+function saveScenario(){
+  const name = document.getElementById("scenario_name").value || 
+    new Date().toLocaleString("ja-JP",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+  const ids = ['p1', 'p2', 'p3', 'adr', 'occ', 'mid', 'mrate', 'cr', 'tsubo', 'tsubo_price', 'rent', 'mr', 'baby_r', 'term', 'ey', 'mterm', 'ltv', 'loan_rate', 'gp', 'audit', 'life', 'bc_fudosan', 'mc1', 'mc2', 'mc3', 'mc4', 'ma3', 'ma4', 'ma5'];
+  const data = { name, savedAt: new Date().toISOString(), params: {} };
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) data.params[id] = el.value;
+  });
+  // ラジオボタン（返済方式）
+  const repay = document.querySelector('input[name="repay_type"]:checked');
+  if(repay) data.params["repay_type"] = repay.value;
+  // JSON生成・ダウンロード
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "TOJIHAUS_" + name.replace(/[/: ]/g,"_") + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadScenario(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      const params = data.params || data;  // 旧形式互換
+      Object.keys(params).forEach(id=>{
+        if(id === "repay_type"){
+          const el = document.querySelector(`input[name="repay_type"][value="${params[id]}"]`);
+          if(el) el.checked = true;
+        } else {
+          const el = document.getElementById(id);
+          if(el) el.value = params[id];
+        }
+      });
+      // シナリオ名を表示
+      if(data.name) document.getElementById("scenario_name").value = data.name;
+      calc();
+      alert("✓ シナリオを読み込みました：" + (data.name || "（名前なし）"));
+    } catch(err){
+      alert("読み込み失敗：" + err.message);
+    }
+    event.target.value = "";  // 同じファイルを再度読み込めるようにリセット
+  };
+  reader.readAsText(file);
+}
+</script>
+</body>
+</html>
