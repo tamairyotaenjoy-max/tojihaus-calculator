@@ -360,6 +360,7 @@ input[type=range].w::-webkit-slider-thumb{background:var(--warn)}
     <div class="tab active" onclick="showTab('baby')">ベビーFTK（1棟）</div>
     <div class="tab" onclick="showTab('mother')">マザーLPS（全棟）</div>
     <div class="tab" onclick="showTab('summary')">サマリー</div>
+    <div class="tab" onclick="showTab('shindan')">物件診断</div>
   </div>
 
   <!-- ===== TAB: BABY ===== -->
@@ -512,6 +513,11 @@ input[type=range].w::-webkit-slider-thumb{background:var(--warn)}
     <div id="ew_monetize_tbl"></div>
   </div>
 
+  <!-- ===== TAB: SHINDAN ===== -->
+  <div class="tc tp" id="tp-shindan">
+    <div id="shindan_area"></div>
+  </div>
+
 </div><!-- /right -->
 </div><!-- /wrap -->
 
@@ -525,7 +531,7 @@ const m=v=>Math.round(v/10000).toLocaleString();
 
 function showTab(name){
   document.querySelectorAll('.tab').forEach((t,i)=>{
-    t.classList.toggle('active',['baby','mother','summary'][i]===name);
+    t.classList.toggle('active',['baby','mother','summary','shindan'][i]===name);
   });
   document.querySelectorAll('.tp').forEach(t=>t.classList.remove('active'));
   $('tp-'+name).classList.add('active');
@@ -1214,6 +1220,137 @@ function calc(){
 
   emtbl+='</div>';
   $('ew_monetize_tbl').innerHTML=emtbl;
+
+  // ── 物件診断タブ ──
+  const miscCost = bc_chukai+bc_design+bc_gaiku+bc_kagu+bc_yobi+bc2+bc3+bc4+bc5;
+  const grossYield  = bc_fudosan > 0 ? rentAnn / bc_fudosan : 0;   // 表面利回り（不動産費のみ）
+  const allInYield  = bcTot > 0      ? rentAnn / bcTot : 0;        // 投資利回り（全投資額）
+  const exitRentYield = exitPrice > 0 ? rentAnn / exitPrice : 0;   // 出口後の賃料利回り
+
+  // 損益分岐点稼働率（EWが賃料をカバーできるocc）
+  // (adr*365*occ_be + mrate*mid)*(1-cr) = rentAnn
+  const denomBE = adr*365*(1-cr);
+  const occBE   = denomBE > 0
+    ? Math.max(0, (rentAnn - mrate*mid*(1-cr)) / denomBE)
+    : null;
+
+  let sdHtml = '';
+
+  // ── Section 1: 投資コスト内訳 ──
+  sdHtml += `<div class="slabel">投資コスト内訳（1棟）</div>`;
+  sdHtml += `<div class="cr g4">
+    <div class="card"><div class="clb">不動産購入費</div><div class="cmv">${fmtM(bc_fudosan)}</div><div class="csv">土地＋建物</div></div>
+    <div class="card"><div class="clb">リノベ工事費（税込）</div><div class="cmv a">${fmtM(bc1)}</div><div class="csv">${tsubo}坪×${tsubo_price}万</div></div>
+    <div class="card"><div class="clb">諸費用（仲介・設計・フィー等）</div><div class="cmv w">${fmtM(miscCost)}</div><div class="csv">仲介・設計・外構・家具等</div></div>
+    <div class="card ab"><div class="clb">総投資額（募集額）</div><div class="cmv a">${fmtM(bcTot)}</div><div class="csv">全初期コスト合計</div></div>
+  </div>`;
+
+  // 利回り3点セット
+  const yGross  = grossYield >= 0.08 ? 'pos3' : grossYield >= 0.05 ? 'warn' : 'neg';
+  const yAllIn  = allInYield >= 0.06 ? 'pos3' : allInYield >= 0.04 ? 'warn' : 'neg';
+  sdHtml += `<div class="tbl" style="margin-bottom:10px">
+    <div class="tbl-h" style="grid-template-columns:1fr 110px 200px"><div>利回り</div><div>値</div><div>計算式</div></div>
+    <div class="trow" style="grid-template-columns:1fr 110px 200px">
+      <div class="nm">表面利回り（不動産費ベース）</div>
+      <div class="${yGross}" style="font-size:16px;font-weight:700;font-family:var(--fm)">${pct(grossYield)}</div>
+      <div style="font-size:10px;color:var(--g3)">賃料年収 ${m(rentAnn)}万 ÷ 不動産購入費 ${m(bc_fudosan)}万</div>
+    </div>
+    <div class="trow" style="grid-template-columns:1fr 110px 200px">
+      <div class="nm">投資利回り（全投資額ベース）</div>
+      <div class="${yAllIn}" style="font-size:16px;font-weight:700;font-family:var(--fm)">${pct(allInYield)}</div>
+      <div style="font-size:10px;color:var(--g3)">賃料年収 ${m(rentAnn)}万 ÷ 総投資額 ${m(bcTot)}万（リノベ・フィー込み）</div>
+    </div>
+  </div>`;
+
+  // ── Section 2: EW宿泊P&L ──
+  sdHtml += `<div class="slabel">EW 宿泊事業P&L（1棟・年間）</div>`;
+  const plRows2 = [
+    ['短期宿泊売上', shortRev, 'pos', `ADR${adr.toLocaleString()}円 × 稼働率${Math.round(occ*100)}% × 365日`],
+    ['中期滞在売上', midRev,   'pos', `週単価${mrate.toLocaleString()}円 × ${mid}回`],
+    ['合計売上',     totalRev, 'pos', ''],
+    ['EW経費（'+Math.round(cr*100)+'%）', -totalCost, 'neg', 'OTA・清掃・光熱費等'],
+    ['粗利（宿泊NOI）', grossProfit, grossProfit>=0?'pos3':'neg', ''],
+    ['賃料支払（ファンドへ）', -rentAnn, 'neg', `${(rent/10000).toFixed(1)}万/月 × 12ヶ月`],
+    ['EW 営業利益（手残り）', ewProfit, ewProfit>=0?'pos':'r', ''],
+  ];
+  let plHtml2 = `<div class="tbl"><div class="tbl-h" style="grid-template-columns:1fr 90px 80px 1fr"><div>項目</div><div>年額</div><div>月額</div><div>備考</div></div>`;
+  plRows2.forEach(([nm,v,cls,note],i)=>{
+    const isSep = nm==='合計売上'||nm==='粗利（宿泊NOI）'||nm==='EW 営業利益（手残り）';
+    const bg = isSep ? 'background:var(--s2);font-weight:600;' : '';
+    const nameColor = nm==='EW 営業利益（手残り）' ? (ewProfit>=0?'var(--a3)':'var(--red)') : 'var(--g2)';
+    plHtml2 += `<div class="trow" style="grid-template-columns:1fr 90px 80px 1fr;${bg}">
+      <div style="color:${nameColor}">${nm}</div>
+      <div class="${cls}">${m(v)}万</div>
+      <div style="text-align:right;font-family:var(--fm);font-size:11px;color:var(--g3)">${Math.round(v/12/10000*10)/10}万</div>
+      <div style="font-size:10px;color:var(--g3)">${note}</div>
+    </div>`;
+  });
+  // 損益分岐点
+  // occBEが0の場合は中期売上だけでカバー可能（短期不要）
+  const rawBE = denomBE > 0 ? (rentAnn - mrate*mid*(1-cr)) / denomBE : null;
+  const occBEStr = occBE === null ? '—' : rawBE !== null && rawBE <= 0 ? '中期売上のみでカバー可' : occBE > 1 ? '達成不可（稼働100%超）' : pct(occBE);
+  const occBECls = occBE === null ? 'warn' : rawBE !== null && rawBE <= 0 ? 'pos3' : occBE > 1 ? 'neg' : occBE > occ ? 'warn' : 'pos3';
+  plHtml2 += `<div style="padding:8px 13px;border-top:1px solid var(--bd);display:grid;grid-template-columns:1fr 140px 1fr;background:rgba(212,148,58,0.06)">
+    <div style="font-size:11px;color:var(--g2)">EW 損益分岐点稼働率（賃料カバー）</div>
+    <div class="${occBECls}" style="font-size:15px;font-weight:700;font-family:var(--fm);text-align:right">${occBEStr}</div>
+    <div style="font-size:10px;color:var(--g3);padding-left:8px">現在${Math.round(occ*100)}% → ${occBE!==null && (rawBE!==null&&rawBE<=0||occBE<=occ) ? '✓ カバーできている' : '⚠ 不足'}</div>
+  </div>`;
+  plHtml2 += `</div>`;
+  sdHtml += plHtml2;
+
+  // ── Section 3: 出口投資家データ ──
+  sdHtml += `<div class="slabel">出口投資家データ（売却時・1棟）</div>`;
+  const eyoCls = exitRentYield >= 0.05 ? 'pos3' : exitRentYield >= 0.03 ? 'warn' : 'neg';
+  sdHtml += `<div class="cr g4">
+    <div class="card ab"><div class="clb">出口買い取り価格</div><div class="cmv a">${fmtM(exitPrice)}</div><div class="csv">実収益÷期待利回り${pct(ey)}</div></div>
+    <div class="card"><div class="clb">年間実収益（NOI−委託料）</div><div class="cmv">${fmtM(exitIncome)}</div><div class="csv">${m(exitNOI)}万 − 委託料${m(mgmtFee)}万</div></div>
+    <div class="card cb"><div class="clb">表面利回り（設定値）</div><div class="cmv c">${pct(ey)}</div><div class="csv">出口投資家の要求利回り</div></div>
+    <div class="card"><div class="clb">賃料利回り（FTK賃料÷買取価格）</div><div class="cmv ${eyoCls}">${pct(exitRentYield)}</div><div class="csv">賃料年収${m(rentAnn)}万÷買取価格</div></div>
+  </div>`;
+
+  // FTKキャピタルゲイン
+  const capCls = capGain >= 0 ? 'pos3' : 'neg';
+  sdHtml += `<div class="tbl" style="margin-bottom:10px">
+    <div class="tbl-h" style="grid-template-columns:1fr 110px 200px"><div>項目</div><div>金額</div><div>備考</div></div>
+    <div class="trow" style="grid-template-columns:1fr 110px 200px">
+      <div class="nm">FTK キャピタルゲイン（EW取り分）</div>
+      <div class="${capCls}" style="font-size:16px;font-weight:700;font-family:var(--fm)">${fmtMp(capGain)}</div>
+      <div style="font-size:10px;color:var(--g3)">売却価格 ${m(exitPrice)}万 − 投資額 ${m(bcTot)}万</div>
+    </div>
+  </div>`;
+
+  // ── Section 4: CF概要（1棟・年次） ──
+  sdHtml += `<div class="slabel">CF概要（1棟・年次分配原資）</div>`;
+  const cf4cols = '50px 1fr 1fr 1fr 1fr';
+  let cf4html = `<div class="tbl"><div class="tbl-h" style="grid-template-columns:${cf4cols}">
+    <div>年度</div><div>賃料収入</div><div>年間経費+償却</div><div>分配可能額(PL収支)</div><div>キャピタル</div>
+  </div>`;
+  for(let t=0;t<term;t++){
+    const thisCap = t===term-1 ? capGain : 0;
+    const capStr  = thisCap !== 0 ? fmtMp(thisCap) : '—';
+    const capCl   = thisCap >= 0 ? 'pos3' : 'neg';
+    const plCl    = plAvail >= 0 ? 'pos2' : 'neg';
+    cf4html += `<div class="trow" style="grid-template-columns:${cf4cols}">
+      <div class="nm">${t+1}年目</div>
+      <div class="pos">${m(rentAnn)}万</div>
+      <div class="neg" style="color:var(--g3)">−${m(baTot+deprBldg_pre+longPre_pre)}万</div>
+      <div class="${plCl}">${m(plAvail)}万</div>
+      <div class="${capCl}">${capStr}</div>
+    </div>`;
+  }
+  cf4html += `<div class="trow tot" style="grid-template-columns:${cf4cols}">
+    <div>累計</div>
+    <div class="pos">${m(rentAnn*term)}万</div>
+    <div></div>
+    <div class="pos2">${m(plAvail*term)}万</div>
+    <div class="${capGain>=0?'pos3':'neg'}">${fmtMp(capGain)}</div>
+  </div>
+  <div style="padding:6px 13px;font-size:10px;color:var(--g3);border-top:1px solid var(--bd);line-height:1.8">
+    ※ 分配可能額 = 賃料収入 − 年次経費 − 減価償却(非現金)。ウォーターフォール分配の上限（各年の実際分配はCFタブ参照）
+  </div></div>`;
+  sdHtml += cf4html;
+
+  $('shindan_area').innerHTML = sdHtml;
 }
 
 calc();
